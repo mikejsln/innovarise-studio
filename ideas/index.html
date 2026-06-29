@@ -56,6 +56,7 @@
     padding:56px 72px 64px;
     display:none;
     flex-direction:column;
+    overflow:hidden;
   }
   .slide.active{display:flex;}
 
@@ -137,6 +138,8 @@
   .divider-meta .countlbl{font-size:13px;color:var(--slate-2);margin-top:6px;}
 
   /* ===== PITCH SLIDE ===== */
+  /* dense pitch slides: tighter padding + flow column that never overlaps */
+  .slide--pitch{padding:40px 64px 30px;}
   .pitch-head{display:flex;justify-content:space-between;align-items:flex-start;gap:24px;}
   .pitch-head .left{flex:1;min-width:0;}
   .tags{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-bottom:10px;}
@@ -153,46 +156,52 @@
     white-space:nowrap;display:inline-flex;align-items:center;gap:6px;
   }
   .badge-contra::before{content:"◆";font-size:9px;}
-  .pitch-name{font-size:33px;font-weight:800;letter-spacing:-.02em;line-height:1.04;}
+  .pitch-name{font-size:30px;font-weight:800;letter-spacing:-.02em;line-height:1.04;}
   .pitch-name .pt{color:var(--accent-deep);}
-  .pitch-one{font-size:16px;color:var(--slate);line-height:1.4;margin-top:7px;max-width:74ch;font-weight:400;}
+  .pitch-one{font-size:14.5px;color:var(--slate);line-height:1.38;margin-top:6px;max-width:78ch;font-weight:400;}
   .pitch-one em{font-style:normal;color:var(--ink);font-weight:600;}
 
+  /* body = two columns; grows but is allowed to shrink (min-height:0) and clips
+     rather than spilling onto the footer block below it */
   .pitch-body{
-    display:grid;grid-template-columns:1fr 1fr;gap:0 38px;margin-top:18px;flex:1;min-height:0;
+    display:grid;grid-template-columns:1fr 1fr;gap:0 34px;margin-top:14px;
+    flex:1 1 auto;min-height:0;overflow:hidden;
   }
-  .col{display:flex;flex-direction:column;gap:13px;}
-  .col.right{border-left:1px solid var(--hair);padding-left:36px;}
+  .col{display:flex;flex-direction:column;gap:10px;min-height:0;}
+  .col.right{border-left:1px solid var(--hair);padding-left:32px;}
   .field .k{
-    font-family:var(--mono);font-size:10.5px;letter-spacing:.16em;text-transform:uppercase;
-    color:var(--accent);font-weight:700;margin-bottom:3px;
+    font-family:var(--mono);font-size:10px;letter-spacing:.16em;text-transform:uppercase;
+    color:var(--accent);font-weight:700;margin-bottom:2px;
   }
-  .field .v{font-size:13.5px;line-height:1.5;color:var(--ink-2);}
+  .field .v{font-size:12.5px;line-height:1.42;color:var(--ink-2);}
   .field .v b{font-weight:700;color:var(--ink);}
   sup.cite{font-family:var(--mono);font-size:9px;color:var(--accent);font-weight:700;vertical-align:super;line-height:0;padding-left:1px;}
 
-  .why{display:flex;flex-direction:column;gap:6px;}
-  .why .wrow{display:flex;gap:8px;font-size:12.5px;line-height:1.45;color:var(--ink-2);}
+  .why{display:flex;flex-direction:column;gap:5px;}
+  .why .wrow{display:flex;gap:8px;font-size:11.5px;line-height:1.38;color:var(--ink-2);}
   .why .wrow .wn{font-family:var(--mono);font-size:10px;color:var(--accent);font-weight:700;flex:none;padding-top:2px;}
   .why .wrow b{font-weight:700;color:var(--ink);}
 
   .scale-box{
     background:var(--paper-2);border:1px solid var(--hair);border-left:3px solid var(--accent);
-    padding:10px 14px;margin-top:2px;
+    padding:8px 12px;margin-top:2px;
   }
-  .scale-box .k{font-family:var(--mono);font-size:10.5px;letter-spacing:.16em;text-transform:uppercase;color:var(--accent-deep);font-weight:700;margin-bottom:3px;}
-  .scale-box .v{font-size:12.5px;line-height:1.45;color:var(--ink-2);}
+  .scale-box .k{font-family:var(--mono);font-size:10px;letter-spacing:.16em;text-transform:uppercase;color:var(--accent-deep);font-weight:700;margin-bottom:2px;}
+  .scale-box .v{font-size:11.5px;line-height:1.38;color:var(--ink-2);}
   .scale-box .v b{font-weight:700;color:var(--ink);}
 
+  /* footer block = novelty + sources, in normal flow below the body.
+     flex:none reserves their space so the body can never overlap them. */
+  .pitch-foot{flex:none;margin-top:8px;}
   .novelty{
-    margin-top:auto;padding-top:8px;
-    font-family:var(--mono);font-size:10px;line-height:1.4;font-weight:700;color:var(--contra);
+    padding-top:7px;
+    font-family:var(--mono);font-size:9.5px;line-height:1.38;font-weight:700;color:var(--contra);
     letter-spacing:.01em;
   }
   .novelty.pos{color:var(--good);}
   .sources{
-    padding-top:8px;margin-top:8px;border-top:1px dotted var(--hair-2);
-    font-family:var(--mono);font-size:9px;line-height:1.6;color:var(--slate);
+    padding-top:6px;margin-top:6px;border-top:1px dotted var(--hair-2);
+    font-family:var(--mono);font-size:8.5px;line-height:1.5;color:var(--slate);
   }
   .sources b{color:var(--accent-deep);font-weight:700;}
   .sources a{color:var(--accent);text-decoration:underline;text-underline-offset:1.5px;}
@@ -651,8 +660,10 @@ DOMAINS.forEach((d, di) => {
           <div class="scale-box"><div class="k">Scale hypothesis (≥$500M)</div><div class="v">${p.scale}</div></div>
         </div>
       </div>
-      ${p.novelty ? `<div class="novelty${/POSITIVE/.test(p.novelty)?' pos':''}">${p.novelty}</div>` : ''}
-      <div class="sources"><b>Sources:</b> ${p.sources}</div>
+      <div class="pitch-foot">
+        ${p.novelty ? `<div class="novelty${/POSITIVE/.test(p.novelty)?' pos':''}">${p.novelty}</div>` : ''}
+        <div class="sources"><b>Sources:</b> ${p.sources}</div>
+      </div>
     </div>`, p.name);
   });
 });
