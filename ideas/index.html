@@ -53,6 +53,8 @@
   .slide{
     position:absolute;
     inset:0;
+    height:720px;          /* definite height so flex-column children (flex:1 1 0) actually shrink */
+    max-height:720px;
     padding:56px 72px 64px;
     display:none;
     flex-direction:column;
@@ -138,73 +140,120 @@
   .divider-meta .countlbl{font-size:13px;color:var(--slate-2);margin-top:6px;}
 
   /* ===== PITCH SLIDE ===== */
-  /* dense pitch slides: tighter padding + flow column that never overlaps */
-  .slide--pitch{padding:40px 64px 30px;}
-  .pitch-head{display:flex;justify-content:space-between;align-items:flex-start;gap:24px;}
+  /* dense pitch slides: tighter padding + reserved footer so body never overlaps.
+     per-domain accent set via inline --dom-accent / --dom-soft / --dom-deep on .slide--pitch */
+  .slide--pitch{
+    padding:22px 54px 16px;
+    --da:var(--accent);        /* domain accent (overridden inline) */
+    --da-soft:var(--accent-soft);
+    --da-deep:var(--accent-deep);
+  }
+  .pitch-head{
+    display:flex;justify-content:space-between;align-items:flex-start;gap:22px;
+    padding-bottom:8px;border-bottom:2px solid var(--da);
+  }
   .pitch-head .left{flex:1;min-width:0;}
-  .tags{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-bottom:10px;}
+  .pitch-head .right-head{flex:none;display:flex;flex-direction:column;align-items:flex-end;gap:7px;padding-top:1px;}
+  .tags{display:flex;gap:7px;align-items:center;flex-wrap:wrap;margin-bottom:8px;}
   .tag{
-    font-family:var(--mono);font-size:10.5px;letter-spacing:.12em;text-transform:uppercase;
-    font-weight:600;padding:3px 9px;border-radius:2px;
+    font-family:var(--mono);font-size:10px;letter-spacing:.13em;text-transform:uppercase;
+    font-weight:700;padding:3px 9px;border-radius:2px;
   }
-  .tag.dom{background:var(--ink);color:var(--paper);}
-  .tag.sub{background:var(--accent-soft);color:var(--accent-deep);}
-  .tag.lens{background:var(--paper-2);color:var(--slate);border:1px solid var(--hair-2);}
-  .badge-contra{
-    font-family:var(--mono);font-size:11px;letter-spacing:.14em;text-transform:uppercase;
-    font-weight:700;color:#fff;background:var(--contra);padding:5px 12px;border-radius:2px;
-    white-space:nowrap;display:inline-flex;align-items:center;gap:6px;
-  }
-  .badge-contra::before{content:"◆";font-size:9px;}
-  .pitch-name{font-size:30px;font-weight:800;letter-spacing:-.02em;line-height:1.04;}
-  .pitch-name .pt{color:var(--accent-deep);}
-  .pitch-one{font-size:14.5px;color:var(--slate);line-height:1.38;margin-top:6px;max-width:78ch;font-weight:400;}
+  .tag.dom{background:var(--da);color:#fff;}
+  .tag.sub{background:var(--da-soft);color:var(--da-deep);}
+  .pitch-name{font-size:27px;font-weight:800;letter-spacing:-.02em;line-height:1.02;}
+  .pitch-name .pt{color:var(--da-deep);}
+  .pitch-one{font-size:13px;color:var(--slate);line-height:1.34;margin-top:4px;max-width:80ch;font-weight:400;}
   .pitch-one em{font-style:normal;color:var(--ink);font-weight:600;}
 
-  /* body = two columns; grows but is allowed to shrink (min-height:0) and clips
-     rather than spilling onto the footer block below it */
+  /* pitch-of-N marker + recommendation chip + contrarian badge (right of header) */
+  .pofn{font-family:var(--mono);font-size:9.5px;letter-spacing:.13em;text-transform:uppercase;color:var(--slate-2);font-weight:600;white-space:nowrap;}
+  .rec-chip{
+    font-family:var(--mono);font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;
+    font-weight:700;padding:5px 12px;border-radius:2px;white-space:nowrap;
+    display:inline-flex;align-items:center;gap:6px;
+  }
+  .rec-chip::before{content:"";width:7px;height:7px;border-radius:50%;background:currentColor;}
+  .rec-chip.advance{background:#e7f1ea;color:#2f5d3f;border:1px solid #bcd8c6;}
+  .rec-chip.watch{background:#f6efe0;color:#8a6a1f;border:1px solid #e3d3a8;}
+  .rec-chip.pass{background:#f3e6df;color:#9a4a2f;border:1px solid #e0c5b6;}
+  .badge-contra{
+    font-family:var(--mono);font-size:10px;letter-spacing:.13em;text-transform:uppercase;
+    font-weight:700;color:#fff;background:var(--contra);padding:4px 10px;border-radius:2px;
+    white-space:nowrap;display:inline-flex;align-items:center;gap:6px;
+  }
+  .badge-contra::before{content:"◆";font-size:8px;}
+
+  /* body = two columns; grows, may shrink (min-height:0), clips rather than spilling */
   .pitch-body{
-    display:grid;grid-template-columns:1fr 1fr;gap:0 34px;margin-top:14px;
-    flex:1 1 auto;min-height:0;overflow:hidden;
+    display:grid;grid-template-columns:1.04fr 0.96fr;grid-template-rows:minmax(0,1fr);
+    gap:0 28px;margin-top:9px;
+    flex:1 1 0;min-height:0;overflow:hidden;
   }
-  .col{display:flex;flex-direction:column;gap:10px;min-height:0;}
-  .col.right{border-left:1px solid var(--hair);padding-left:32px;}
+  .col{display:flex;flex-direction:column;gap:6px;min-height:0;overflow:hidden;}
+  .col.right{border-left:1px solid var(--hair);padding-left:26px;}
+
+  /* column section label */
+  .col-label{
+    font-family:var(--mono);font-size:9px;letter-spacing:.2em;text-transform:uppercase;
+    font-weight:700;color:var(--slate-2);margin-bottom:1px;
+  }
+
   .field .k{
-    font-family:var(--mono);font-size:10px;letter-spacing:.16em;text-transform:uppercase;
-    color:var(--accent);font-weight:700;margin-bottom:2px;
+    font-family:var(--mono);font-size:9.5px;letter-spacing:.15em;text-transform:uppercase;
+    color:var(--da);font-weight:700;margin-bottom:1px;display:flex;align-items:center;gap:5px;
   }
-  .field .v{font-size:12.5px;line-height:1.42;color:var(--ink-2);}
+  .field .k .ic{font-size:10px;opacity:.85;}
+  .field .v{font-size:11px;line-height:1.34;color:var(--ink-2);}
   .field .v b{font-weight:700;color:var(--ink);}
-  sup.cite{font-family:var(--mono);font-size:9px;color:var(--accent);font-weight:700;vertical-align:super;line-height:0;padding-left:1px;}
+  sup.cite{font-family:var(--mono);font-size:9px;color:var(--da);font-weight:700;vertical-align:super;line-height:0;padding-left:1px;}
 
-  .why{display:flex;flex-direction:column;gap:5px;}
-  .why .wrow{display:flex;gap:8px;font-size:11.5px;line-height:1.38;color:var(--ink-2);}
-  .why .wrow .wn{font-family:var(--mono);font-size:10px;color:var(--accent);font-weight:700;flex:none;padding-top:2px;}
-  .why .wrow b{font-weight:700;color:var(--ink);}
-
+  /* scale box now lives in the LEFT column */
   .scale-box{
-    background:var(--paper-2);border:1px solid var(--hair);border-left:3px solid var(--accent);
-    padding:8px 12px;margin-top:2px;
+    background:var(--paper-2);border:1px solid var(--hair);border-left:3px solid var(--da);
+    padding:6px 11px;margin-top:auto;flex:none;
   }
-  .scale-box .k{font-family:var(--mono);font-size:10px;letter-spacing:.16em;text-transform:uppercase;color:var(--accent-deep);font-weight:700;margin-bottom:2px;}
-  .scale-box .v{font-size:11.5px;line-height:1.38;color:var(--ink-2);}
+  .scale-box .k{
+    font-family:var(--mono);font-size:9.5px;letter-spacing:.15em;text-transform:uppercase;
+    color:var(--da-deep);font-weight:700;margin-bottom:2px;display:flex;align-items:center;gap:6px;
+  }
+  .scale-box .badge500{
+    font-family:var(--mono);font-size:8.5px;letter-spacing:.05em;font-weight:800;
+    background:var(--da);color:#fff;padding:1px 6px;border-radius:2px;text-transform:none;
+  }
+  .scale-box .v{font-size:11px;line-height:1.36;color:var(--ink-2);}
   .scale-box .v b{font-weight:700;color:var(--ink);}
 
-  /* footer block = novelty + sources, in normal flow below the body.
-     flex:none reserves their space so the body can never overlap them. */
-  .pitch-foot{flex:none;margin-top:8px;}
-  .novelty{
-    padding-top:7px;
-    font-family:var(--mono);font-size:9.5px;line-height:1.38;font-weight:700;color:var(--contra);
-    letter-spacing:.01em;
+  /* RIGHT column = the case: Why Now (for) / Why Not (against) */
+  .case-box{border:1px solid var(--hair);border-radius:3px;padding:7px 11px 8px;}
+  .case-box + .case-box{margin-top:7px;}
+  .case-box.for{background:#f1f6f2;border-color:#cfe2d4;border-left:3px solid #3a6b4a;}
+  .case-box.against{background:#f9f1e8;border-color:#ecdcc4;border-left:3px solid #b9772f;}
+  .case-head{
+    font-family:var(--mono);font-size:10px;letter-spacing:.14em;text-transform:uppercase;
+    font-weight:700;margin-bottom:5px;display:flex;align-items:center;gap:6px;
   }
-  .novelty.pos{color:var(--good);}
+  .case-box.for .case-head{color:#2f5d3f;}
+  .case-box.against .case-head{color:#955a1f;}
+  .case-head .sym{font-size:11px;font-weight:800;}
+  .case-list{display:flex;flex-direction:column;gap:3.5px;}
+  .case-list .crow{display:flex;gap:7px;font-size:10px;line-height:1.32;color:var(--ink-2);}
+  .case-list .crow .cm{font-size:9px;flex:none;padding-top:2px;font-weight:800;}
+  .case-box.for .crow .cm{color:#3a6b4a;}
+  .case-box.against .crow .cm{color:#b9772f;}
+  .case-list .crow b{font-weight:700;color:var(--ink);}
+  .case-list .crow.novelty{font-family:var(--mono);font-size:9px;line-height:1.34;}
+  .case-box.for .crow.novelty{color:#2f5d3f;}
+  .case-box.against .crow.novelty{color:#955a1f;}
+
+  /* footer = sources only, reserved in normal flow (flex:none) so body can't overlap */
+  .pitch-foot{flex:none;margin-top:7px;}
   .sources{
-    padding-top:6px;margin-top:6px;border-top:1px dotted var(--hair-2);
+    padding-top:6px;border-top:1px dotted var(--hair-2);
     font-family:var(--mono);font-size:8.5px;line-height:1.5;color:var(--slate);
   }
-  .sources b{color:var(--accent-deep);font-weight:700;}
-  .sources a{color:var(--accent);text-decoration:underline;text-underline-offset:1.5px;}
+  .sources b{color:var(--da-deep);font-weight:700;}
+  .sources a{color:var(--da);text-decoration:underline;text-underline-offset:1.5px;}
   .sources i{font-style:italic;}
 
   /* ===== SHORTLIST ===== */
@@ -285,7 +334,7 @@ const DOMAINS = [
 const PITCHES = [
   /* ---- DOMAIN 1: ENERGY ---- */
   {
-    dom:"Energy Ops", sub:"Process & Asset Intelligence", lens:"Analog arbitrage", contra:false,
+    dom:"Energy Ops", sub:"Process & Asset Intelligence", contra:false,
     name:"KiloWise", one:"An <em>agentic energy-cost copilot</em> that reads existing meters/PLC/SCADA and tells the shift supervisor, in plain Spanish, the cheapest way to run the next 8 hours — no new hardware.",
     customer:"Plant/energy managers & shift supervisors at mid-sized LatAm manufacturers ($20M–$300M rev): food, plastics, textiles, mid-tier metals — too small for a Siemens deployment, too big to fly blind.",
     problem:"Energy is a top-3, rising cost line, but the team only sees it monthly on the bill — after the peak-demand charge is locked. JTBD: run today's production for the least money without stopping the line.",
@@ -298,10 +347,16 @@ const PITCHES = [
     ],
     scale:"Land in Guatemalan mid-market → replicate market-by-market (Central America, Mexico, Brazil, Andean) → expand from copilot to full energy system-of-record. Tens of thousands of plants × a few $K/mo clears <b>$500M</b>.",
     sources:`<a href="https://www.eu-startups.com/2025/01/germanys-ecoplanet-raises-e16-million-to-help-companies-cut-energy-costs-and-emissions/">EU-Startups. (2025). <i>Ecoplanet raises €16M Series A</i>.</a> · <a href="https://www.iea.org/commentaries/industrial-facilities-could-save-billions-by-implementing-energy-management">IEA. (2024). <i>Industrial facilities could save billions by implementing energy management</i>.</a> · <a href="https://www.mate-solar.com/guatemala-energy-storage-market-2026-the-definitive-technical-commercial-guide-for-industrial-and-commercial-stakeholders/">Mate Solar. (2026). <i>Guatemala energy storage market 2026</i>.</a> [T3]`,
-    novelty:"Novelty signal: NEGATIVE — closest analogs (Ecoplanet Series A, METRON multi-round/~$55M) are funded incumbents in the same AI industrial-energy lane, not fresh seed; market is contested, not whitespace."
+    novelty:"Novelty signal: NEGATIVE — closest analogs (Ecoplanet Series A, METRON multi-round/~$55M) are funded incumbents in the same AI industrial-energy lane, not fresh seed; market is contested, not whitespace.",
+    rec:"watch",
+    whyNot:[
+      "<b>Novelty: not fresh.</b> Ecoplanet (Series A, EQT) and METRON (~$55M) already occupy the AI industrial-energy lane — the model is contested, the LatAm geography the only open angle.",
+      "<b>Crowded value prop:</b> \"another dashboard / copilot\" is exactly what mid-market plants have been pitched for a decade and tuned out — adoption, not technical feasibility, is the risk.",
+      "<b>WTP risk:</b> SaaS-seat pricing on a savings promise the buyer hasn't seen yet; the cheaper-to-believe outcome model (see PhantomLoad) may out-compete it."
+    ]
   },
   {
-    dom:"Energy Ops", sub:"Process & Asset Intelligence", lens:"Contrarian + first-principles", contra:true,
+    dom:"Energy Ops", sub:"Process & Asset Intelligence", contra:true,
     name:"PhantomLoad", one:"Instead of a dashboard, it sells <em>found money</em>: AI disaggregates existing meter data to expose hidden waste and bills only as a <em>share of the savings it proves</em>.",
     customer:"CFOs / plant GMs at energy-intensive LatAm manufacturers — the budget owner who feels the cost line, not the engineer who reads the dashboard.",
     problem:"Manufacturers have been pitched dashboards for a decade and stopped buying — \"another screen no one looks at.\" Real JTBD: cut my bill without staffing an analyst, installing hardware, or trusting a vague promise.",
@@ -314,10 +369,16 @@ const PITCHES = [
     ],
     scale:"Savings-share land-and-expand across LatAm energy-intensive verticals → the verified-savings dataset becomes a defensible targeting asset → expand into power-factor, predictive motor failure, demand-charge lines. Price tracks the (large) waste pool — clears <b>$500M</b>.",
     sources:`<a href="https://finance.yahoo.com/sectors/technology/articles/eaton-predictive-maintenance-software-significantly-130000943.html">Eaton (via ACCESS Newswire/Yahoo Finance). (2026). <i>Predictive-maintenance software detects issues without added sensors</i>.</a> [T3, vendor] · <a href="https://www.osti.gov/servlets/purl/1210896">U.S. DOE / Office of Scientific & Technical Information. (n.d.). <i>Improving motor and drive system performance</i>.</a> [T1] · <a href="https://www.mate-solar.com/guatemala-energy-storage-market-2026-the-definitive-technical-commercial-guide-for-industrial-and-commercial-stakeholders/">Mate Solar. (2026). <i>Guatemala energy storage market 2026</i>.</a> [T3]`,
-    novelty:"Novelty signal: NEGATIVE — no exact-lane seed twin, but the pay-from-savings M&V space is mature-to-scarred (Redaptive ~$1B+ raised; Carbon Lighthouse wound down; Sealed pivoted). Differentiate hard on sensor-free, software-only disaggregation."
+    novelty:"Novelty signal: NEGATIVE — no exact-lane seed twin, but the pay-from-savings M&V space is mature-to-scarred (Redaptive ~$1B+ raised; Carbon Lighthouse wound down; Sealed pivoted). Differentiate hard on sensor-free, software-only disaggregation.",
+    rec:"advance",
+    whyNot:[
+      "<b>Novelty: a scarred lane.</b> Outcome-based M&V is mature-to-scarred — Redaptive raised ~$1B+, Carbon Lighthouse wound down, Sealed pivoted; the pay-from-savings model has burned capital before.",
+      "<b>Capital intensity of the model:</b> savings-share billing means the venture funds the work before it collects — working-capital and M&V-dispute risk, not pure SaaS economics.",
+      "<b>Disaggregation accuracy is the whole bet:</b> if sensor-free ML can't itemize waste credibly enough to underwrite a savings share, the differentiator collapses into the contested EMS field."
+    ]
   },
   {
-    dom:"Energy Ops", sub:"Grid-Interactive & Flexibility", lens:"Catalyst + asset-first", contra:false,
+    dom:"Energy Ops", sub:"Grid-Interactive & Flexibility", contra:false,
     name:"FlexWatt", one:"Software that aggregates industrial load flexibility (+ on-site gensets/batteries) into a virtual resource — <em>avoiding peak charges today, earning grid/balancing revenue</em> as LatAm markets open.",
     customer:"Energy-intensive plants with shiftable load or on-site generation (smelters, cold storage, cement, large food/bev) — first as peak-shaving, evolving into a demand-response fleet.",
     problem:"Plants pay large peak-demand charges and sit on idle backup generation + shiftable processes that are economically dormant. Today: stop overpaying the few peak hours that set my charge. Tomorrow: get paid to flex.",
@@ -330,10 +391,16 @@ const PITCHES = [
     ],
     scale:"Peak-shaving (works day one, regulation-agnostic) builds the installed base → flip to revenue VPP as each market opens DR programs → aggregated MW under management is the asset, monetized per-MW across geographies. Region-by-region replication of a ~15.7%-CAGR market clears <b>$500M</b>.",
     sources:`<a href="https://www.eu-startups.com/2025/09/amsterdams-sympower-raises-additional-e42-million-funding-to-drive-europes-energy-transition/">EU-Startups. (2025). <i>Sympower raises additional €42M to drive Europe's energy transition</i>.</a> · <a href="https://www.enelnorthamerica.com/solutions/energy-solutions/demand-response">Enel X / Enel North America. (n.d.). <i>Demand response (~9.3 GW managed)</i>.</a> [T2] · <a href="https://dataintelo.com/report/demand-response-aggregator-market">DataIntelo. (n.d.). <i>Demand response aggregator market</i>.</a> [T3] · <a href="https://www.pv-magazine.com/2026/02/17/guatemala-peg-5-tender-draws-51-bidders-for-4-7-gw-of-capacity/">pv magazine. (2026). <i>Guatemala PEG-5 tender draws 51 bidders for 4.7 GW</i>.</a> [T2]`,
-    novelty:"Novelty signal: NEGATIVE — all three closest analogs (Sympower Series B+, Voltus, Enel X) are scaling/incumbent DR aggregators with direct solution overlap; the LatAm geography is the only fresh angle, not the model."
+    novelty:"Novelty signal: NEGATIVE — all three closest analogs (Sympower Series B+, Voltus, Enel X) are scaling/incumbent DR aggregators with direct solution overlap; the LatAm geography is the only fresh angle, not the model.",
+    rec:"advance",
+    whyNot:[
+      "<b>Novelty: not the model, just the map.</b> Sympower (Series B+), Voltus, and Enel X (~9.3 GW) are scaling incumbents with direct overlap — only the LatAm geography is fresh.",
+      "<b>Revenue leg is regulation-gated:</b> the VPP upside depends on DR/balancing markets opening, which is outside the venture's control and historically slow in LatAm; peak-shaving alone may be a thinner business.",
+      "<b>AG-dependence:</b> the anchor-node thesis leans hard on AG's plants + regulator access — pooling enough third-party flexible load to matter is the unproven, capital-and-trust-intensive part."
+    ]
   },
   {
-    dom:"Energy Ops", sub:"Carbon-Linked Energy Compliance", lens:"Catalyst + value-chain re-cut", contra:false,
+    dom:"Energy Ops", sub:"Carbon-Linked Energy Compliance", contra:false,
     name:"CarbonLedger", one:"Turns a manufacturer's existing energy/process data into <em>auditable, product-level carbon footprints</em> — so LatAm exporters satisfy EU CBAM without a consultant army.",
     customer:"Export-oriented LatAm manufacturers in CBAM-covered goods (steel, aluminium, cement, fertilizers) + downstream suppliers asked for carbon data by EU buyers — and the compliance lead who owns the filing.",
     problem:"CBAM's definitive phase began Jan 1, 2026 (a new 50-tonne/importer de minimis exempts ~90% of importers but still covers ~99% of emissions); exporters must supply product-specific embedded-carbon data or their EU buyers pay punitive defaults. Data is scattered across meters and ERPs with no system to convert it. JTBD: prove the carbon intensity of this batch of steel to keep selling into Europe.",
@@ -346,11 +413,17 @@ const PITCHES = [
     ],
     scale:"Wedge = CBAM steel/cement filings for LatAm exporters → expand to all CBAM sectors + downstream goods (proposed 2028) → expand from exporters to their supply chains → the product-level carbon dataset becomes infrastructure for trade finance & green-premium pricing. Clears <b>$500M</b>.",
     sources:`<a href="https://taxation-customs.ec.europa.eu/carbon-border-adjustment-mechanism_en">European Commission, Taxation & Customs Union. (2026). <i>Carbon Border Adjustment Mechanism</i>.</a> [T1] · <a href="https://www.opis.com/blog/the-eu-cbam-latin-america-exporters/">OPIS. (2025). <i>The EU CBAM and Latin American exporters</i>.</a> [T2] · <a href="https://eurometal.net/cbam-introduces-uncertainty-adjustment-challenges-for-brazilian-exporters/">EUROMETAL. (2025). <i>CBAM introduces uncertainty for Brazilian exporters</i>.</a> [T2] · <a href="https://www.carbonchain.com/cbam">CarbonChain. (n.d.). <i>CBAM compliance</i>.</a> [T3, vendor]`,
-    novelty:"Novelty signal: NEGATIVE — strongest novelty case of the four (real exporter-side/LatAm white space), but CarbonChain (Series A, ~$24M, already serves exporters) plus Brazil-exporter niche tools already contest the lane; frame as underserved, not empty."
+    novelty:"Novelty signal: NEGATIVE — strongest novelty case of the four (real exporter-side/LatAm white space), but CarbonChain (Series A, ~$24M, already serves exporters) plus Brazil-exporter niche tools already contest the lane; frame as underserved, not empty.",
+    rec:"watch",
+    whyNot:[
+      "<b>Novelty: underserved, not empty.</b> CarbonChain (Series A, ~$24M, already exporter-facing) plus Brazil-exporter niche tools contest the lane — the LatAm/product-level capture angle is a wedge, not white space.",
+      "<b>Regulatory-dependent demand:</b> the whole TAM hangs on CBAM scope/timeline (first surrender Sept 2027, downstream expansion only proposed) — softening or delay re-prices the urgency.",
+      "<b>Compliance tools commoditize:</b> CBAM filing may become a checkbox feature inside ERP/big-four offerings; the defensible part (steel emissions allocation) is narrow and must be proven."
+    ]
   },
   /* ---- DOMAIN 2: FREIGHT ---- */
   {
-    dom:"Freight & Port", sub:"Inland Fleet Reliability & Cargo Security", lens:"First-principles + asset-first", contra:false,
+    dom:"Freight & Port", sub:"Inland Fleet Reliability & Cargo Security", contra:false,
     name:"CargoCentinela", one:"<em>Insurance-grade cargo security as a service</em> — telematics + secure-lane routing that lowers the premium, not just tracks the truck.",
     customer:"Mid-market manufacturers, importers, 3PLs moving high-value goods on Mexico/Brazil corridors; secondary buyer = the cargo insurers/underwriters who price these lanes.",
     problem:"LatAm cargo theft runs ~$5.5B/yr in estimated direct losses (2023); Central Mexico + Brazilian states are hotspots (violent hijackings, fake checkpoints, AI-forged BoLs). Shippers over-pay premiums or self-insure blind. Today's telematics tells you after the truck is gone — it doesn't re-price or re-route.",
@@ -363,10 +436,16 @@ const PITCHES = [
     ],
     scale:"Wedge = secure-lane SaaS for high-value shippers → become the risk-pricing/data layer for cargo insurers across LatAm (license scores, parametric cargo insurance, all theft corridors). LatAm cross-border road freight ~$59.6B (2025); a few % of a multi-billion premium pool clears <b>$500M</b>.",
     sources:`<a href="https://iumi.com/newsletter-march-2026/cargo-theft-latin-america-reducing-loss-frequency/">IUMI. (2026). <i>Cargo theft Latin America: reducing loss frequency</i>.</a> [T2] · <a href="https://mexicobusiness.news/logistics/news/cargo-theft-mexico-fell-215-2025-risks-persist">Mexico Business News. (2026). <i>Cargo theft in Mexico fell 21.5% in 2025</i> (SESNSP data).</a> [T2] · <a href="https://losspreventionmedia.com/cargo-theft-in-latin-america-a-persistent-threat/">Loss Prevention Media. (2025). <i>Cargo theft in Latin America: a persistent threat</i>.</a> [T3] · <a href="https://www.mordorintelligence.com/industry-reports/latin-america-cross-border-road-freight-market">Mordor Intelligence. (2025). <i>Latin America cross-border road freight market</i>.</a> [T3]`,
-    novelty:"Novelty signal: NEGATIVE — closest analog Cobli is Series B+ (~$63.8M, IFC/SoftBank-backed) with insurer-linked risk overlap; the insurance-priced-risk wedge is the only fresh angle within a well-funded telematics field."
+    novelty:"Novelty signal: NEGATIVE — closest analog Cobli is Series B+ (~$63.8M, IFC/SoftBank-backed) with insurer-linked risk overlap; the insurance-priced-risk wedge is the only fresh angle within a well-funded telematics field.",
+    rec:"watch",
+    whyNot:[
+      "<b>Novelty: well-funded field.</b> Cobli (Series B+, ~$63.8M, IFC/SoftBank) sits in the telematics lane with insurer-linked overlap — only the insurance-priced-risk framing is fresh, and it's unproven.",
+      "<b>Two-sided sell:</b> the premium-share model needs insurers to actually re-price on a verified-mitigation feed — underwriter behavior the venture doesn't control and that requires loss-data credibility to earn.",
+      "<b>Efficacy figure unverified:</b> the loss-reduction proof underpinning premium-share pricing is flagged [needs verification]; if mitigation isn't quantifiably underwritable, the wedge is just another tracking SaaS."
+    ]
   },
   {
-    dom:"Freight & Port", sub:"Freight Working Capital & Payments", lens:"Analog arbitrage + asset-first", contra:false,
+    dom:"Freight & Port", sub:"Freight Working Capital & Payments", contra:false,
     name:"Flete al Día", one:"<em>Same-day pay for LatAm's informal truckers, underwritten by the load itself</em> — embedded freight factoring where AG's freight flow is the first book of receivables.",
     customer:"Small carriers & owner-operators (the long tail of LatAm trucking; informality >50% of total employment, IMF) who wait weeks for payment; buyer-side = shippers/brokers wanting reliable capacity.",
     problem:"Carriers float fuel, tolls, and driver pay for ~35–60 days before invoices clear. For thin-margin owner-operators this is existential — it caps how many loads they take. US factoring is mature (Triumph, OTR, eCapital) at 2–5% fees; LatAm has only early-stage equivalents (e.g. Solvento) embedded in freight flow.",
@@ -379,10 +458,16 @@ const PITCHES = [
     ],
     scale:"Wedge = factoring AG-anchored loads → compound: more products per carrier (fuel, tolls, insurance, banking → \"neobank for truckers\") × more payers (every shipper/broker) × geography (Mexico → Brazil → region). Against the ~$290.5B LatAm freight-trucking market, a small slice at 2–5% spread clears <b>$500M</b>.",
     sources:`<a href="https://www.elibrary.imf.org/display/book/9781513575919/ch006.xml">International Monetary Fund. (2021). <i>The global informal workforce</i> (Ch. 6; LatAm informality >50% of total employment, 30–70% range).</a> [T1] · <a href="https://ecapital.com/blog/quick-pay-vs-freight-factoring-which-route-is-best-for-your-trucking-business/">eCapital. (2026). <i>Quick pay vs. freight factoring</i> (fees 2–5%; 35–60 day terms).</a> [T3, vendor] · <a href="https://triumph.io/">Triumph Financial. (n.d.). <i>Freight payments, factoring & banking network</i>.</a> [T1] · <a href="https://tracxn.com/d/explore/logistics-tech-startups-in-latam/__eaM4gplkxEJj58DWWPBqIBZ6-eGzmsYXcylLd_otbYA">Tracxn. (2026). <i>Logistics-tech startups in LatAm</i> (+214.6% funding 2025).</a> [T2] · <a href="https://www.gminsights.com/industry-analysis/freight-trucking-market">Global Market Insights. (2025). <i>Freight trucking market</i> (LatAm ~$290.5B, 2025).</a> [T2]`,
-    novelty:"Novelty signal: POSITIVE — the LatAm-native embedded-freight-factoring lane is still early: closest analog Solvento is only Series A ($12.5M, Nov 2024); the proven model (Triumph) is a US public incumbent, leaving the regional wedge fresh."
+    novelty:"Novelty signal: POSITIVE — the LatAm-native embedded-freight-factoring lane is still early: closest analog Solvento is only Series A ($12.5M, Nov 2024); the proven model (Triumph) is a US public incumbent, leaving the regional wedge fresh.",
+    rec:"advance",
+    whyNot:[
+      "<b>Capital-intensive by nature:</b> factoring is a balance-sheet business — funding receivables needs debt facilities and disciplined credit ops, not just software; default and fraud risk in informal trucking is real.",
+      "<b>Solvento is moving:</b> the lane is early but not empty — a Series A LatAm-native player ($12.5M, Nov 2024) is already building the same wedge.",
+      "<b>AG-anchor must generalize fast:</b> AG payables make underwriting easy on day one, but the venture is an internal financing arm until it underwrites non-AG shippers at scale (the charter flag)."
+    ]
   },
   {
-    dom:"Freight & Port", sub:"Routing, Capacity & Visibility Intelligence", lens:"Value-chain re-cut + asset-first", contra:false,
+    dom:"Freight & Port", sub:"Routing, Capacity & Visibility Intelligence", contra:false,
     name:"RetornoVacío", one:"<em>Kill the empty-mile</em> — a backhaul-matching network that turns deadhead trips into revenue, seeded by AG's predictable inbound import flows.",
     customer:"Carriers & owner-operators running one-way loaded / one-way empty; secondary = shippers wanting cheaper, greener capacity.",
     problem:"A large share of LatAm trucking miles are empty backhauls — trucks return deadhead, burning fuel and capping income. Freight-matching is a named lever to shrink empty-mile ratios, but it's hard: supply (small/informal carriers) is fragmented and demand opaque.",
@@ -395,10 +480,16 @@ const PITCHES = [
     ],
     scale:"Wedge = AG-seeded backhaul matching on a few corridors → open marketplace (all shippers/lanes) → routing/optimization SaaS → the capacity & pricing data layer for LatAm road freight (rate benchmarks, lane forecasting). Take-rate on a few % of a ~$59.6B+ market clears <b>$500M</b>.",
     sources:`<a href="https://www.mordorintelligence.com/industry-reports/latin-america-cross-border-road-freight-market">Mordor Intelligence. (2025). <i>Latin America cross-border road freight market</i> ($59.57B 2025; 6.14% CAGR; $80.23B 2030).</a> [T3] · <a href="https://nuvocargo.com/blog-posts/announcing-nuvocargos-36m-in-series-b-round-to-expand-all-major-us-mx-border-crossings">Nuvocargo. (2023). <i>Announcing Nuvocargo's $36M Series B</i> (led by QED).</a> [T2] · <a href="https://www.freightwaves.com/news/liftit-raises-22-5-million-to-automate-the-last-mile-in-latin-america">FreightWaves. (2020). <i>Liftit raises $22.5M Series B</i> (acquired by Carryt, 2023).</a> [T2]`,
-    novelty:"Novelty signal: NEGATIVE — closest analogs are Series B+ and past their peak: Nuvocargo (Series B, marketplace + QuickPay overlap) and Liftit (acquired 2023, a weak-outcome signal for the LatAm freight-marketplace model)."
+    novelty:"Novelty signal: NEGATIVE — closest analogs are Series B+ and past their peak: Nuvocargo (Series B, marketplace + QuickPay overlap) and Liftit (acquired 2023, a weak-outcome signal for the LatAm freight-marketplace model).",
+    rec:"watch",
+    whyNot:[
+      "<b>Novelty: past-peak comps.</b> Nuvocargo (Series B, marketplace overlap) and Liftit (acquired 2023, weak outcome) signal the LatAm freight-marketplace model is contested and has already produced soft exits.",
+      "<b>Marketplace liquidity is brutal:</b> AG's inbound lanes seed one side, but third-party backhaul liquidity beyond AG is the chronic chicken-and-egg that has stalled prior entrants.",
+      "<b>Take-rate compression:</b> matching is a low-margin, easily-copied function; defensibility depends on owning the rate/lane data layer — a later, harder game."
+    ]
   },
   {
-    dom:"Freight & Port", sub:"Routing, Capacity & Visibility Intelligence", lens:"Contrarian / non-consensus", contra:true,
+    dom:"Freight & Port", sub:"Routing, Capacity & Visibility Intelligence", contra:true,
     name:"NegroLogística", one:"Everyone builds shipper-facing visibility dashboards. The opposite is the money: a <em>carrier-side OS that makes the informal truck legible</em> — and sells that legibility as the dataset.",
     customer:"Informal/small carriers themselves (the truck operator), not the enterprise shipper. Data buyers (insurers, lenders, shippers, governments) are the second customer.",
     problem:"Consensus: \"shippers will pay for visibility\" — project44 (~$2.6B val, ~$879M raised) & FourKites own that buyer on enterprise per-user/custom contracts. Non-consensus: those platforms are blind in LatAm because the carrier is informal & undigitized — their coverage gap IS the market. So win the carrier with a free/cheap OS and become the only source of ground-truth tracking data.",
@@ -411,11 +502,18 @@ const PITCHES = [
     ],
     scale:"Wedge = free carrier OS for AG's network → the carrier-data layer for all LatAm freight: visibility to shippers/p44-types, risk scores to insurers, credit data to lenders (feeds Flete al Día), capacity data to marketplaces. A data network over the ~$290.5B LatAm freight-trucking market with multiple buyer types clears <b>$500M</b>.",
     sources:`<a href="https://www.cbinsights.com/company/project44/financials">CB Insights. (2026). <i>project44 financials</i> (~$879M raised; ~$2.6B val, 2022).</a> [T2] · <a href="https://www.elibrary.imf.org/display/book/9781513575919/ch006.xml">IMF. (2021). <i>The global informal workforce</i> (LatAm informality 30–70%).</a> [T1] · <a href="https://iumi.com/newsletter-march-2026/cargo-theft-latin-america-reducing-loss-frequency/">IUMI. (2026). <i>Cargo theft Latin America: reducing loss frequency</i>.</a> [T2] · <a href="https://www.gminsights.com/industry-analysis/freight-trucking-market">Global Market Insights. (2025). <i>Freight trucking market</i> (LatAm ~$290.5B).</a> [T2]`,
-    novelty:"Novelty signal: POSITIVE — the consensus incumbents (project44/FourKites, late-stage) own the shipper side; no funded LatAm-native \"free carrier OS → data network\" analog surfaced, so the contrarian carrier-side wedge is genuinely uncrowded."
+    novelty:"Novelty signal: POSITIVE — the consensus incumbents (project44/FourKites, late-stage) own the shipper side; no funded LatAm-native \"free carrier OS → data network\" analog surfaced, so the contrarian carrier-side wedge is genuinely uncrowded.",
+    rec:"advance",
+    whyNot:[
+      "<b>Give-it-away adoption is hard:</b> a free carrier OS only becomes a data network if informal drivers actually adopt and keep using it — the exact cold-start that has killed carrier-side apps before.",
+      "<b>Deferred monetization:</b> the value is in a data feed sold later to insurers/lenders/shippers — a two-step business where revenue lags adoption and the data must prove sellable to non-AG buyers.",
+      "<b>Incumbents could swing down:</b> project44/FourKites are thin in LatAm today, but a late-stage player could acquire or build into the carrier side if the data proves valuable.",
+      "<b>[needs verification]</b> the claim that no incumbent owns the free-carrier-app → data-network model in LatAm is flagged, not confirmed."
+    ]
   },
   /* ---- DOMAIN 3: DISTRIBUTION ---- */
   {
-    dom:"Distribution", sub:"Embedded Commerce & Credit at PoS", lens:"Asset-first", contra:false,
+    dom:"Distribution", sub:"Embedded Commerce & Credit at PoS", contra:false,
     name:"Crédito Distun", one:"Embedded net-terms + working-capital credit underwritten at the moment a ferretería or contractor places an order — <em>\"buy materials now, pay when the job pays.\"</em>",
     customer:"Independent hardware stores (ferreterías) & small/mid contractors who buy from Distun and AG's B2B channel — thin-file businesses that today run on informal cash credit (\"fiado\") and counter relationships.",
     problem:"The most expensive, frequent JTBD in the channel is financing the gap between buying materials and getting paid for the job. Banks won't underwrite thin-file ferreterías; distributors extend terms by gut feel, capping order size and tying up their balance sheet. Cash dependency throttles buyer growth and AG's basket size.",
@@ -428,10 +526,16 @@ const PITCHES = [
     ],
     scale:"Wedge = financing AG's own channel orders → compound: more products (wallet, card, insurance, payments); new customer types (open the rail to non-AG distributors and their ferreterías — the data moat improves with each); geography (Guatemala → Mexico → Andean). A lending book against a $120B regional hardware-channel TAM clears <b>$500M</b>.",
     sources:`<a href="https://www.globenewswire.com/news-release/2025/11/25/3194085/28124/en/Latin-America-Embedded-Finance-Business-Report-2025-A-50-Billion-Market-by-2030-Platform-Led-Models-Are-Driving-Competitive-Differentiation-Across-Verticals.html">ResearchAndMarkets (via GlobeNewswire). (2025). <i>Latin America embedded finance report 2025</i> ($38.8B 2025 → $50.6B 2030).</a> [T2] · <a href="https://techcrunch.com/2024/07/17/sam-altman-jp-morgan-slope-65m/">TechCrunch. (2024). <i>Slope raises $65M led by J.P. Morgan Payments</i> (~$252M total).</a> [T2] · <a href="https://www.trade.gov/market-intelligence/guatemala-fintech-opportunities">U.S. ITA / trade.gov. (2025). <i>Guatemala fintech opportunities</i> (5 → 31 fintechs, +416%).</a> [T1] · <a href="https://www.businesswire.com/news/home/20220111005783/en/">BusinessWire. (2022). <i>Tul Series B</i> (600,000 stores; $120B TAM).</a> [T1, self-reported]`,
-    novelty:"Novelty signal: NEGATIVE — closest analog Slope is a well-capitalized ~Series B (~$252M raised, J.P. Morgan-backed) directly in embedded B2B credit; the LatAm-native distributor-credit application is the only fresh angle, not the model."
+    novelty:"Novelty signal: NEGATIVE — closest analog Slope is a well-capitalized ~Series B (~$252M raised, J.P. Morgan-backed) directly in embedded B2B credit; the LatAm-native distributor-credit application is the only fresh angle, not the model.",
+    rec:"advance",
+    whyNot:[
+      "<b>Novelty: model is funded.</b> Slope (~$252M, J.P. Morgan-backed) sits directly in embedded B2B credit — the LatAm distributor-credit application is the only fresh angle.",
+      "<b>Credit risk on thin-file borrowers:</b> lending to informal ferreterías is the whole risk; AG purchase history de-risks underwriting only for AG's own channel, and a downturn tests the book.",
+      "<b>Balance-sheet + regulatory load:</b> originating credit needs capital, a securitization path, and lending-license/usury navigation across each geography — heavier than a software venture."
+    ]
   },
   {
-    dom:"Distribution", sub:"Embedded Commerce & Credit at PoS", lens:"First-principles problem-mining", contra:false,
+    dom:"Distribution", sub:"Embedded Commerce & Credit at PoS", contra:false,
     name:"PideAG", one:"A self-serve digital storefront + reorder app that lets every Distun/B2B buyer <em>order 24/7</em> instead of waiting on a phone call or a rep visit.",
     customer:"Mid-size wholesale buyers & ferreterías currently served by phone, WhatsApp, and field reps — buyers who want to check stock, price, and reorder on their own schedule.",
     problem:"Distribution was built to move product, not serve the buyer. Ordering is synchronous and rep-gated: buyers can't see real-time stock/price, reorders need a human, after-hours demand is lost. This caps order frequency and leaks share to whoever picks up the phone fastest.",
@@ -444,10 +548,16 @@ const PITCHES = [
     ],
     scale:"Wedge = digitize AG's own accounts → open the platform to other distributors/manufacturers as a multi-tenant B2B commerce + payments layer (category infrastructure) → geography. Honest risk: stays an internal tool. The $500M version is the horizontal B2B commerce rail for LatAm industrial distribution, not just AG's store.",
     sources:`<a href="https://www.ringly.io/blog/b2b-ecommerce-statistics-2026">Ringly. (2026). <i>B2B e-commerce statistics 2026</i> (global B2B e-commerce ~$32.11T 2025, citing Experro).</a> [T3] · <a href="https://www.bloomberglinea.com/2022/01/11/colombian-e-commerce-startup-tul-nabs-800-million-valuation/">Bloomberg Línea. (2022). <i>Tul nabs $800M valuation</i> ($181M Series B).</a> [T2] · <a href="https://www.businesswire.com/news/home/20220111005783/en/">BusinessWire. (2022). <i>Tul Series B</i> (600,000 stores; $120B TAM).</a> [T1, self-reported] · <a href="https://www.trade.gov/country-commercial-guides/guatemala-digital-economy">U.S. ITA / trade.gov. (2025). <i>Guatemala digital economy</i> ($12.7B digital payments 2025).</a> [T1]`,
-    novelty:"Novelty signal: NEGATIVE — Tul (Series B, ~$800M val) strongly overlaps a B2B ordering platform, and its 2024 Sooper merger + layoffs make the late-stage LatAm hardware-marketplace model a cautionary, not fresh, comp."
+    novelty:"Novelty signal: NEGATIVE — Tul (Series B, ~$800M val) strongly overlaps a B2B ordering platform, and its 2024 Sooper merger + layoffs make the late-stage LatAm hardware-marketplace model a cautionary, not fresh, comp.",
+    rec:"pass",
+    whyNot:[
+      "<b>Novelty: cautionary, not fresh.</b> Tul (Series B, ~$800M val) directly overlaps a B2B ordering platform, and its 2024 Sooper merger + layoffs make the late-stage LatAm hardware-marketplace model a warning sign.",
+      "<b>Stays an internal tool:</b> the team's own honest caveat — as a captive AG storefront the advantage is head-start-only; the standalone business needs a multi-tenant pivot that isn't the wedge.",
+      "<b>Thin standalone value:</b> ordering/reorder UX is increasingly table-stakes and commoditized; without credit or data attached it's a feature, not a $500M venture."
+    ]
   },
   {
-    dom:"Distribution", sub:"Last-Mile & Fulfillment", lens:"Analog arbitrage", contra:false,
+    dom:"Distribution", sub:"Last-Mile & Fulfillment", contra:false,
     name:"ObraExpress", one:"On-demand & scheduled materials delivery direct to the jobsite — <em>\"Uber for the gravel-and-rebar that doesn't fit in a parcel network.\"</em>",
     customer:"Contractors & project/site managers (and the ferreterías serving them) who need heavy, bulky, time-sensitive materials delivered to an active jobsite — not a loading dock.",
     problem:"Parcel last-mile (99minutos, Cargamos) ignores construction: materials are heavy, palletized, crew-scheduled, delivered to muddy sites with no dock. Contractors burn labor hours fetching materials or wait days for distributor trucks. A failed/late delivery idles an entire crew — the single most expensive site delay.",
@@ -460,10 +570,16 @@ const PITCHES = [
     ],
     scale:"Wedge = AG's heavy-materials deliveries in one metro → become the neutral last-mile carrier for all distributors/ferreterías in a region (marketplace of haulers) → more jobs (equipment-rental delivery, debris haul-away, returns) → geography across LatAm metros. A neutral construction last-mile network across a $120B channel clears <b>$500M</b>.",
     sources:`<a href="https://www.curri.com/">Curri. (n.d.). <i>Last-mile delivery for construction & industrial supplies</i>.</a> [T3, vendor] · <a href="https://techcrunch.com/2021/09/22/last-mile-logistics-platform-cargamos-raises-11m-seed-round-to-expand-same-day-delivery/">TechCrunch. (2021). <i>Cargamos raises $11M seed</i>.</a> [T2] · <a href="https://www.cemexventures.com/what-is-last-mile-delivery-2/">CEMEX Ventures. (n.d.). <i>What is last-mile delivery</i>.</a> [T3, corporate VC]`,
-    novelty:"Novelty signal: NEGATIVE — the closest direct analog Curri is a well-funded Series B ($42M, Bessemer) in the exact US construction last-mile category; Cargamos (seed, stalled since 2021) is adjacent. The model is funded and proven, not fresh."
+    novelty:"Novelty signal: NEGATIVE — the closest direct analog Curri is a well-funded Series B ($42M, Bessemer) in the exact US construction last-mile category; Cargamos (seed, stalled since 2021) is adjacent. The model is funded and proven, not fresh.",
+    rec:"watch",
+    whyNot:[
+      "<b>Novelty: funded & proven elsewhere.</b> Curri (Series B, $42M, Bessemer) owns the exact US construction last-mile category — the model is validated, leaving LatAm execution (not invention) as the bet.",
+      "<b>Asset-heavy, ops-intensive:</b> dispatch reliability to muddy jobsites with mixed vehicle classes is an operations business with thin margins and real failure cost, not a software multiple.",
+      "<b>Liquidity beyond AG:</b> AG/Distun fleet seeds supply, but a neutral hauler marketplace must attract third-party carriers and competing distributors' demand to clear $500M."
+    ]
   },
   {
-    dom:"Distribution", sub:"Channel / Dealer Enablement", lens:"Contrarian / non-consensus", contra:true,
+    dom:"Distribution", sub:"Channel / Dealer Enablement", contra:true,
     name:"RepOS", one:"The anti-marketplace bet: don't disintermediate the sales rep and the counter — <em>arm them</em>. An AI co-pilot + ordering tablet that makes the human channel dramatically more productive.",
     customer:"Field sales reps, dealers, and ferretería counter staff across AG's distribution network — the humans everyone else's \"digital ordering\" thesis is trying to remove.",
     problem:"Consensus says LatAm industrial buying goes pure self-serve (Tul-style). The non-consensus truth in this informal, relationship-driven, credit-gated channel: the rep and the counter ARE the channel, and they fly blind — no next-best-order, no live credit/stock visibility, no upsell prompts, manual quoting. The expensive gap isn't \"no app,\" it's an unaugmented human.",
@@ -476,11 +592,18 @@ const PITCHES = [
     ],
     scale:"Wedge = lift AG reps' basket/close rate (measurable, AG pays) → license the rep/dealer OS to other manufacturers/distributors who sell through human channels (seat-based SaaS) → become the system-of-record for industrial channel sales, feeding data to credit (Crédito Distun) and demand intelligence (Veta). Seat-based SaaS across LatAm distribution forces clears <b>$500M</b>.",
     sources:`<a href="https://www.fortunebusinessinsights.com/sales-enablement-platform-market-114208">Fortune Business Insights. (2025). <i>Sales enablement platform market</i> ($6.13B 2025 → $25.65B 2034, 17.2% CAGR).</a> [T2] · <a href="https://latamlist.com/tul-raises-181m-series-b-for-construction-supplies-network/">LatamList. (2022). <i>Tul raises $181M Series B</i> (inventory/invoicing software for stores).</a> [T2]`,
-    novelty:"Novelty signal: POSITIVE — no funded EM/LatAm industrial-distribution rep-enablement analog surfaced; the sales-enablement incumbents are all US-enterprise-SaaS-facing, leaving the augment-the-channel wedge genuinely uncontested at the seed stage."
+    novelty:"Novelty signal: POSITIVE — no funded EM/LatAm industrial-distribution rep-enablement analog surfaced; the sales-enablement incumbents are all US-enterprise-SaaS-facing, leaving the augment-the-channel wedge genuinely uncontested at the seed stage.",
+    rec:"advance",
+    whyNot:[
+      "<b>Contrarian bet could be wrong:</b> if the channel really does move toward self-serve (the Tul thesis), arming the rep is enabling a shrinking surface — the whole premise is the rep stays central.",
+      "<b>Behavior-change risk:</b> value depends on reps and counter staff actually adopting an AI co-pilot and changing how they sell — habit change in an informal, relationship-driven channel is hard.",
+      "<b>No market-validation comp:</b> the upside is also the risk — no funded analog means no proof anyone will pay seat-based SaaS for EM industrial rep enablement yet.",
+      "<b>Captive until it isn't:</b> real value needs licensing the OS to other distributors; until then AG is the only deployment."
+    ]
   },
   /* ---- DOMAIN 4: FORECASTING ---- */
   {
-    dom:"Demand Forecasting", sub:"Strategic Capacity & Capex Planning", lens:"First-principles problem-mining", contra:false,
+    dom:"Demand Forecasting", sub:"Strategic Capacity & Capex Planning", contra:false,
     name:"Foundry", one:"<em>The capex go/no-go cockpit</em> for industrial expansion decisions — the artifact a capex committee actually reviews.",
     customer:"CFO / Head of Strategy / capex committees at mid-to-large LatAm industrial manufacturers (steel, cement, glass, chemicals, packaging) — those who must commit $50M–$500M to a new line 18–36 months before demand materializes.",
     problem:"Capacity decisions are the most expensive, least-supported bets industrials make — driven by a single planner's spreadsheet + a consultant deck, systematically wrong on timing (over-build in a downturn, under-build into a boom). (One widely-cited example: Meta reportedly under-forecast its own GPU need, forcing emergency premium procurement — <b>[needs verification: 400% / $800M figure, vendor-blog sourced]</b>.)",
@@ -493,10 +616,17 @@ const PITCHES = [
     ],
     scale:"Beachhead = AG-adjacent LatAm heavy industry → expand by customer type (manufacturers → suppliers → the lenders/PE underwriting the capex) and geography (LatAm → all EM, where demand data is worst and pain highest). A per-decision cockpit on $50M–$500M bets across global heavy industry clears <b>$500M</b>.",
     sources:`<a href="https://www.mckinsey.com/industries/technology-media-and-telecommunications/our-insights/the-cost-of-compute-a-7-trillion-dollar-race-to-scale-data-centers">McKinsey & Company. (2025). <i>The cost of compute: a $7 trillion race to scale data centers</i> (156 GW AI demand; ~$5.2T AI-ready capex).</a> [T2] · <a href="https://www.mordorintelligence.com/industry-reports/latin-america-construction-market">Mordor Intelligence. (2025). <i>Latin America construction market</i> ($709.8B 2025 → $905.9B 2030).</a> [T3] · <a href="https://www.businesswire.com/news/home/20240708556035/en/AI-Driven-Project-Management-Sees-90-Positive-ROI-Among-Users">Capterra (via BusinessWire). (2024). <i>AI-driven project management sees 90% positive ROI among users</i>.</a> [T2]`,
-    novelty:"Novelty signal: POSITIVE — no dominant venture-backed startup occupies the AI industrial-capex/capacity-decision wedge; adjacent activity is general manufacturing-AI and enterprise demand-planning incumbents (SAP IBP, Blue Yonder), leaving a genuine first-principles opening (with no market-validation comp)."
+    novelty:"Novelty signal: POSITIVE — no dominant venture-backed startup occupies the AI industrial-capex/capacity-decision wedge; adjacent activity is general manufacturing-AI and enterprise demand-planning incumbents (SAP IBP, Blue Yonder), leaving a genuine first-principles opening (with no market-validation comp).",
+    rec:"advance",
+    whyNot:[
+      "<b>No market-validation comp:</b> the open wedge cuts both ways — no funded analog means no proof a capex committee will buy and trust a probabilistic build/wait recommendation.",
+      "<b>Long, lumpy sales cycle:</b> capex decisions are infrequent, high-stakes, and committee-driven; per-decision engagements are hard to make into recurring, predictable revenue.",
+      "<b>Training-data depth unproven:</b> the moat rests on AG's historical capex→demand outcomes — flagged [needs verification] for depth/recoverability; thin labels = weak model.",
+      "<b>Trust-to-act gap:</b> committees may consume the cockpit as one input but still defer to the consultant deck and the planner's spreadsheet."
+    ]
   },
   {
-    dom:"Demand Forecasting", sub:"Strategic Capacity & Capex Planning", lens:"Contrarian / value-chain re-cut", contra:true,
+    dom:"Demand Forecasting", sub:"Strategic Capacity & Capex Planning", contra:true,
     name:"Counterweight", one:"<em>Forecast your competitors' capacity before they build it.</em> Everyone forecasts their own demand; almost no one rigorously forecasts competitor supply additions.",
     customer:"Strategy / M&A / commercial-planning teams at industrial producers and their investors — anyone whose pricing and capex math depends on what the rest of the market is about to add.",
     problem:"In commodity industrials (steel, cement, chemicals) margins are destroyed not by demand misses but by everyone expanding at once into the same up-cycle. The consensus tool is a demand forecast; the contrarian insight is that supply-side forecasting is the bigger lever — and is essentially unserved.",
@@ -509,10 +639,17 @@ const PITCHES = [
     ],
     scale:"Wedge in one sector+region (e.g. LatAm long steel) → expand by product line (supply radar → the neutral market-balance data layer feeding pricing, hedging, M&A) and customer type (producers → traders → lenders → insurers pricing project risk). A cross-sector \"where is supply going\" intelligence layer for global industrials clears <b>$500M</b>.",
     sources:`<a href="https://www.grandviewresearch.com/industry-analysis/steel-market">Grand View Research. (2024). <i>Steel market</i> (~$1.82T 2024 → ~$2.12T 2030).</a> [T3] · <a href="https://www.bnamericas.com/en/features/latin-americas-us538bn-near-term-construction-pipeline">BNamericas. (2026). <i>Latin America's US$538bn near-term construction pipeline</i> (800 projects, 2026–27).</a> [T2] · <a href="https://www.globaldata.com/store/report/infrastructure-construction-market-analysis/">GlobalData. (n.d.). <i>Infrastructure construction market analysis</i> (220,000+ projects tracked).</a> [T2]`,
-    novelty:"Novelty signal: POSITIVE — the supply-side/competitor-capacity forecasting wedge is under-built; closest analogs (ChAI ~$1.7M total, Permutable AI, early-stage) are sub-scale, and GlobalData/BNamericas are data-provider incumbents, not product competitors — fresh, but with capital-light monetization risk."
+    novelty:"Novelty signal: POSITIVE — the supply-side/competitor-capacity forecasting wedge is under-built; closest analogs (ChAI ~$1.7M total, Permutable AI, early-stage) are sub-scale, and GlobalData/BNamericas are data-provider incumbents, not product competitors — fresh, but with capital-light monetization risk.",
+    rec:"advance",
+    whyNot:[
+      "<b>Monetization risk:</b> the wedge is fresh, but sub-scale analogs (ChAI ~$1.7M, Permutable) hint the willingness-to-pay for supply-side foresight may be capital-light / niche, not venture-scale.",
+      "<b>Data-licensability unproven:</b> the AG import-flow edge only transfers if it's legally licensable and de-identifiable — flagged [needs verification]; if not, the information advantage doesn't leave AG.",
+      "<b>Forecasting accuracy is the product:</b> inferring competitor capacity from permits/imports/hiring is noisy; a wrong \"oversupply\" call is more damaging than no call, raising the credibility bar.",
+      "<b>Two unverified figures</b> (steel input-price volatility) underpin the WTP argument."
+    ]
   },
   {
-    dom:"Demand Forecasting", sub:"Procurement, S&OP & Price Foresight", lens:"Catalyst + asset-first", contra:false,
+    dom:"Demand Forecasting", sub:"Procurement, S&OP & Price Foresight", contra:false,
     name:"Tidewater", one:"<em>Long-horizon input-price + demand foresight built into your S&OP cycle</em> — the strategic layer above existing ERP/planning, not a rip-and-replace.",
     customer:"S&OP / procurement / supply-chain planning leaders at mid-market industrial manufacturers & distributors — the planners who run the cycle and must lock procurement/inventory against a 6–18-month view.",
     problem:"S&OP today is a near-term, internal-data exercise; the strategic horizon (where to place big procurement commitments, what input prices do, which demand segments grow) is exactly where planners are blind and where the money is. They stitch 15+ disparate sources by hand. (One steel company unified 15 sources via C3 AI for 20-week forecasts, +13% accuracy on $200M of raw-material inventory — vendor case study.)",
@@ -526,10 +663,16 @@ const PITCHES = [
     scale:"Beachhead = LatAm industrial mid-market S&OP → expand by more jobs per customer (S&OP copilot → procurement automation → inventory-financing decisions → the planning system of record) and geography. The broader SCM software market is $35B+ (2025) → ~$98B by 2035 — a vertical industrial planning layer clears <b>$500M</b>.",
     sources:`<a href="https://c3.ai/customers/steel-company-transforms-value-chain-with-ai/">C3.ai. (n.d.). <i>Steel company transforms value chain with AI</i> (15 sources; 20-week forecasts; +13%; $200M inventory).</a> [T3, vendor] · <a href="https://www.crunchbase.com/organization/firstshift">Crunchbase. (2025). <i>Firstshift</i> ($7.59M Series A, June 2025).</a> [T2] · <a href="https://getlatka.com/companies/a2go.ai">GetLatka. (2025). <i>A2Go</i> (~$3.4M revenue, bootstrapped).</a> [T3] · <a href="https://www.precedenceresearch.com/supply-chain-management-market">Precedence Research. (2026). <i>Supply chain management market</i> ($35.3B 2025 → $97.6B 2035, 10.7% CAGR).</a> [T3]`,
     novelty:"Novelty signal: NEGATIVE — closest analog Firstshift is a freshly-funded Series A GenAI S&OP copilot directly in Tidewater's lane (a competitor, not just validation); A2Go shows the model works but the category is already being capitalized.",
-    veta:"Veta-overlap flag: closest of the four. Differentiated by buyer (planners/procurement, not BM-manufacturer sales), horizon (6–18mo vs near-term), and scope (price + cross-sector). Could be framed as a Veta upsell module if Board sees collision."
+    rec:"watch",
+    whyNot:[
+      "<b>Novelty: a live competitor.</b> Firstshift is a freshly-funded Series A GenAI S&OP copilot directly in Tidewater's lane — not just validation, an active rival; A2Go shows the category is already being capitalized.",
+      "<b>Veta-overlap flag (closest of the four):</b> risk of colliding with the studio's own Veta; differentiated by buyer/horizon/scope but the Board may see it as a Veta upsell module, not a standalone venture.",
+      "<b>Rip-and-replace resistance:</b> selling a strategic layer above entrenched ERP/planning means integration friction and competing for the same S&OP budget incumbents (SAP IBP, Blue Yonder) defend.",
+      "<b>Transaction-data licensability</b> flagged [needs verification]."
+    ]
   },
   {
-    dom:"Demand Forecasting", sub:"Macro-Industrial Intelligence", lens:"Contrarian + asset-first + analog", contra:true,
+    dom:"Demand Forecasting", sub:"Macro-Industrial Intelligence", contra:true,
     name:"Bedrock", one:"<em>Real-time industrial-activity nowcasting for lenders and investors in emerging markets</em> — the highest-value forecasting customer isn't the industrial, it's the capital allocator.",
     customer:"Banks, development-finance institutions (DFIs), PE/infra funds, and insurers allocating capital into LatAm/EM industrial & construction projects — buyers who must judge sector demand 3–7 years out but have terrible, lagged official data.",
     problem:"Official industrial/construction statistics in EM are slow, revised, and incomplete (informality ~30–70% across major LatAm economies), so lenders mis-price and under-lend to exactly the productive activity that drives growth. The contrarian bet: the highest-value customer is the capital allocator who has no ground-truth on the physical economy.",
@@ -542,7 +685,14 @@ const PITCHES = [
     ],
     scale:"Wedge = LatAm industrial-activity indices for a handful of DFIs/banks → expand by products (nowcast feed → credit scoring → project-risk/insurance pricing → trade-finance underwriting), customer type (lenders → insurers → governments/multilaterals), and geography (LatAm → all EM). A physical-economy intelligence layer for EM capital allocation clears <b>$500M</b>.",
     sources:`<a href="https://www.quant-cube.com/macro-nowcast">QuantCube Technology. (n.d.). <i>Macro nowcast</i> (real-time macro estimates, DM + EM coverage).</a> [T3, vendor] · <a href="https://www.grandviewresearch.com/industry-analysis/alternative-data-market">Grand View Research. (2025). <i>Alternative data market</i> (~$18.8B 2025; ~37% CAGR).</a> [T3] · <a href="https://www.elibrary.imf.org/display/book/9781513575919/ch006.xml">IMF. (2021). <i>The global informal workforce</i> (LatAm informality 30–70%).</a> [T1] · <a href="https://www.oecd.org/en/publications/latin-american-economic-outlook-2025_80e48de5-en/full-report/financing-production-transformation_0f843ccc.html">OECD. (2025). <i>Latin American Economic Outlook 2025: financing production transformation</i>.</a> [T1]`,
-    novelty:"Novelty signal: NEGATIVE — the incumbent analogs are mature: RavenPack (Series B+, GP Bullhound/EIB/FT-backed) and QuantCube (Series B, Moody's-anchored) own the institutional nowcast lane, and ChAI's funding is stale (seed 2020, last raise 2022). The differentiated angle is the DFI/MSME/informal-economy application, not the nowcasting toolkit."
+    novelty:"Novelty signal: NEGATIVE — the incumbent analogs are mature: RavenPack (Series B+, GP Bullhound/EIB/FT-backed) and QuantCube (Series B, Moody's-anchored) own the institutional nowcast lane, and ChAI's funding is stale (seed 2020, last raise 2022). The differentiated angle is the DFI/MSME/informal-economy application, not the nowcasting toolkit.",
+    rec:"advance",
+    whyNot:[
+      "<b>Novelty: mature incumbents.</b> RavenPack (Series B+) and QuantCube (Series B, Moody's-anchored) own the institutional nowcast lane — the toolkit is contested; only the DFI/MSME/informal-economy application is differentiated.",
+      "<b>Data-licensability is the linchpin:</b> the whole moat is AG's physical-economy transaction footprint sold as a feed — flagged [needs verification] for whether it can be aggregated/anonymized enough to license externally.",
+      "<b>Slow institutional sales:</b> banks, DFIs, and insurers are long-cycle, procurement-heavy buyers; proving the nowcast actually improves underwriting decisions is a high evidentiary bar.",
+      "<b>Single-source signal risk:</b> a feed anchored on AG's flows may not generalize across regions/sectors without broader data partnerships."
+    ]
   }
 ];
 
@@ -607,6 +757,18 @@ add(`<div class="slide slide--toc">
 </div>`, "Contents");
 
 const DOMKEY = ["Energy Ops","Freight & Port","Distribution","Demand Forecasting"];
+/* per-domain accent palette: [accent, soft (chip bg), deep (text)] */
+const DOMACCENT = {
+  "Energy Ops":        {a:"#3f5e8c", soft:"#e7ecf4", deep:"#2c466e"}, /* slate blue */
+  "Freight & Port":    {a:"#1f7a73", soft:"#e1f0ee", deep:"#155b56"}, /* teal */
+  "Distribution":      {a:"#8a5a3c", soft:"#f1e7df", deep:"#6b4327"}, /* terracotta */
+  "Demand Forecasting":{a:"#5a4a86", soft:"#ebe7f3", deep:"#42356a"}  /* indigo violet */
+};
+const REC = {
+  advance:{cls:"advance", label:"Advance to Discover"},
+  watch:  {cls:"watch",   label:"Watch"},
+  pass:   {cls:"pass",    label:"Pass"}
+};
 DOMAINS.forEach((d, di) => {
   const ps = PITCHES.filter(p => p.dom === DOMKEY[di]);
   /* DIVIDER */
@@ -631,37 +793,61 @@ DOMAINS.forEach((d, di) => {
   </div>`, d.name);
 
   /* PITCH SLIDES */
-  ps.forEach(p => {
-    const whyHtml = p.why.map((w,i)=>`<div class="wrow"><span class="wn">${i+1}</span><span>${w}</span></div>`).join("");
-    const vetaHtml = p.veta ? `<div class="field"><div class="k">Veta note</div><div class="v" style="font-size:12px;color:var(--slate);">${p.veta}</div></div>` : "";
-    add(`<div class="slide slide--pitch">
+  const acc = DOMACCENT[DOMKEY[di]];
+  const accStyle = `--da:${acc.a};--da-soft:${acc.soft};--da-deep:${acc.deep};`;
+  ps.forEach((p, pi) => {
+    const rec = REC[p.rec] || REC.watch;
+    /* Why Now = the FOR case (the rationale points); fold POSITIVE novelty in as a point. */
+    const whyNowRows = p.why.map(w=>`<div class="crow"><span class="cm">▲</span><span>${w}</span></div>`).join("");
+    const noveltyPos = /POSITIVE/.test(p.novelty);
+    const noveltyText = p.novelty.replace(/^Novelty signal:\s*/,'');
+    /* fold novelty into Why Now when POSITIVE (fresh); when NEGATIVE it's already led
+       as the first Why Not bullet, so we don't duplicate it. */
+    const novNowRow = noveltyPos ? `<div class="crow novelty"><span class="cm">◆</span><span><b>Novelty:</b> ${noveltyText}</span></div>` : "";
+    /* Why Not = the AGAINST case (NEGATIVE novelty is folded into its first bullet). */
+    const whyNotRows = p.whyNot.map(w=>`<div class="crow"><span class="cm">▼</span><span>${w}</span></div>`).join("");
+
+    add(`<div class="slide slide--pitch" style="${accStyle}">
       <div class="pitch-head">
         <div class="left">
           <div class="tags">
             <span class="tag dom">${p.dom}</span>
             <span class="tag sub">${p.sub}</span>
-            <span class="tag lens">Lens · ${p.lens}</span>
           </div>
           <div class="pitch-name"><span class="pt">${p.name}</span></div>
           <div class="pitch-one">${p.one}</div>
         </div>
-        ${p.contra ? '<span class="badge-contra">Contrarian</span>' : ''}
+        <div class="right-head">
+          <span class="pofn">Pitch ${pi+1} of ${ps.length} · ${p.dom}</span>
+          <span class="rec-chip ${rec.cls}">${rec.label}</span>
+          ${p.contra ? '<span class="badge-contra">Contrarian</span>' : ''}
+        </div>
       </div>
       <div class="pitch-body">
         <div class="col left">
-          <div class="field"><div class="k">Customer</div><div class="v">${p.customer}</div></div>
-          <div class="field"><div class="k">Problem · JTBD</div><div class="v">${p.problem}</div></div>
-          <div class="field"><div class="k">Product hypothesis</div><div class="v">${p.product}</div></div>
-          ${vetaHtml}
+          <div class="col-label">The pitch</div>
+          <div class="field"><div class="k"><span class="ic">◷</span>Customer</div><div class="v">${p.customer}</div></div>
+          <div class="field"><div class="k"><span class="ic">✦</span>Problem · JTBD</div><div class="v">${p.problem}</div></div>
+          <div class="field"><div class="k"><span class="ic">▸</span>Product hypothesis</div><div class="v">${p.product}</div></div>
+          <div class="field"><div class="k"><span class="ic">◇</span>AG advantage hypothesis</div><div class="v">${p.ag}</div></div>
+          <div class="scale-box">
+            <div class="k">Scale hypothesis <span class="badge500">≥$500M</span></div>
+            <div class="v">${p.scale}</div>
+          </div>
         </div>
         <div class="col right">
-          <div class="field"><div class="k">AG advantage hypothesis</div><div class="v">${p.ag}</div></div>
-          <div class="field"><div class="k">Why now · rationale</div><div class="why">${whyHtml}</div></div>
-          <div class="scale-box"><div class="k">Scale hypothesis (≥$500M)</div><div class="v">${p.scale}</div></div>
+          <div class="col-label">The case</div>
+          <div class="case-box for">
+            <div class="case-head"><span class="sym">▲</span>Why Now</div>
+            <div class="case-list">${whyNowRows}${novNowRow}</div>
+          </div>
+          <div class="case-box against">
+            <div class="case-head"><span class="sym">▼</span>Why Not</div>
+            <div class="case-list">${whyNotRows}</div>
+          </div>
         </div>
       </div>
       <div class="pitch-foot">
-        ${p.novelty ? `<div class="novelty${/POSITIVE/.test(p.novelty)?' pos':''}">${p.novelty}</div>` : ''}
         <div class="sources"><b>Sources:</b> ${p.sources}</div>
       </div>
     </div>`, p.name);
